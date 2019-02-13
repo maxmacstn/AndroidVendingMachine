@@ -40,6 +40,16 @@ dependencies {
     compile 'com.github.ApendIr:slider:1.0'
     implementation 'com.github.harry1453:android-bluetooth-serial:v1.1'
 
+    compile 'com.github.kittinunf.fuel:fuel:2.0.1' //for JVM
+    compile 'com.github.kittinunf.fuel:fuel-android:2.0.1' //for Android
+    compile 'com.github.kittinunf.fuel:fuel-jackson:2.0.1' //for Jackson support
+//    compile 'com.github.kittinunf.fuel:fuel-livedata:2.0.1' //for LiveData support
+//    compile 'com.github.kittinunf.fuel:fuel-rxjava:2.0.1' //for RxJava support
+//    compile 'com.github.kittinunf.fuel:fuel-coroutines:2.0.1' //for Kotlin Coroutines support
+//    compile 'com.github.kittinunf.fuel:fuel-gson:2.0.1' //for Gson support
+//    compile 'com.github.kittinunf.fuel:fuel-moshi:2.0.1' //for Moshi support
+
+
     compile 'com.android.volley:volley:1.1.1'
 
 

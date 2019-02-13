@@ -11,6 +11,7 @@ import android.widget.NumberPicker
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import ir.apend.slider.model.Slide
 import ir.apend.slider.ui.Slider
@@ -18,6 +19,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_menu.*
 import org.json.JSONException
 import org.json.JSONObject
+import android.widget.Toast
+import android.os.AsyncTask.execute
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.kittinunf.fuel.Fuel
+
+
+
+
+
 
 
 class MenuActivity : Activity() {
@@ -127,6 +137,7 @@ class MenuActivity : Activity() {
                     val data = JSONObject(response.get(0).toString())
                     val transactionCode =  JSONObject(data.toString()).get("transactionNo")
                     Log.d(TAG,"Transactioncode = ${transactionCode}")
+                    getQRData(transactionCode.toString(),{})
 
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -136,7 +147,6 @@ class MenuActivity : Activity() {
             },
             Response.ErrorListener { error ->
                 Log.d(TAG,"ERROR!" + error.toString())
-                progress?.hide()
 
             }
         )
@@ -144,5 +154,44 @@ class MenuActivity : Activity() {
         requestQueue.add(jsonObjectRequest)
 
     }
+
+    private fun getQRData(refNo:String, callback:(String) -> Unit){
+
+        progress = ProgressDialog.show(this,"Loading","Getting QR Data..")
+
+        val url = "https://api.gbprimepay.com/gbp/gateway/qrcode/text"
+        val params = HashMap<String, Any>()
+        params["amount"] = 1.0
+        params["responseUrl"] = "https://magiapp.me"
+        params["backgroundUrl"] = "https://us-central1-vending-machine-webhook.cloudfunctions.net/qrwebhook"
+        params["detail"] = "testPayment"
+        params["referenceNo"] = refNo
+        params["payType"] = "F"
+        params["token"] = "YmpcqiOCK8b6ZnHL3JBSALJ52hq+Nq13luvIxImtAu90fKEDV6fyXSHm6ukJieySndpArszmFwcEVlYJEQVELY/6iYhMtUFifwkoAJ1qXqb3CGhZhYqI2P1dKQt+k9cZmySIez2uR6Dj9E6+uwNXbP0OBCY="
+        params["merchantDefined1"] = "Product: ${VendingMachine.products.get(currentProduct).name}"
+
+        Fuel.post(url,params.toList())
+            .also { println(it.url) }
+            .also { println(String(it.body.toByteArray())) }.response{ request, response, result ->
+                Log.d(TAG, request.toString())
+                Log.d(TAG, response.toString())
+                val (bytes, error) = result
+                if (bytes != null) {
+                    progress.hide()
+                    Log.d(TAG, "[response bytes] ${String(bytes)}")
+                    val data = JSONObject(String(bytes))
+                    val refNo = data.getString("referenceNo")
+                    val qrData = data.getString("qrcode")
+                    val gbpRefNo = data.getString("gbpReferenceNo")
+                    Log.d(TAG, "${refNo}\n${qrData}\n${gbpRefNo}")
+                }
+            }
+
+
+
+
+    }
+
+
 
 }
