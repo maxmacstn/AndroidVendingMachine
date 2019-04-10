@@ -42,11 +42,11 @@ object VendingMachine {
             listener.onConnected(connectedDevice)
         }
 
-        sendTest()
+//        sendTest()
     }
 
     public fun sendTest(){// Let's send a message:
-        deviceInterface?.sendMessage("Hello world!")}
+        deviceInterface?.sendMessage("chk")}
 
 
     private fun onMessageSent(message: String) {
@@ -69,6 +69,10 @@ object VendingMachine {
         }
 
     }
+
+    fun sendMessage(message: String){
+        deviceInterface?.sendMessage(message);
+}
 
     private fun onError(error: Throwable) {
         Log.d(TAG,"Error  ${error.toString()}")

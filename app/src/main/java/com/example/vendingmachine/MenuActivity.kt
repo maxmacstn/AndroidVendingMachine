@@ -3,50 +3,57 @@ package com.example.vendingmachine
 import android.os.Bundle
 import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
+import android.content.Intent
 import android.support.v4.view.ViewPager
-import android.text.Editable
 import android.util.Log
 import android.widget.NumberPicker
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import ir.apend.slider.model.Slide
-import ir.apend.slider.ui.Slider
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_menu.*
 import org.json.JSONException
 import org.json.JSONObject
-import android.widget.Toast
-import android.os.AsyncTask.execute
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.example.vendingmachine.Constants.GB_TOKEN
 import com.github.kittinunf.fuel.Fuel
+import com.harrysoft.androidbluetoothserial.BluetoothSerialDevice
 
 
-
-
-
-
-
-class MenuActivity : Activity() {
+class MenuActivity : Activity(), VendingMachineListener {
     lateinit var numberPicker: NumberPicker
     lateinit var customSlider: CustomSlider
-    val mlValue = arrayOf("100","150","200","250","300","350","400","450","500")
+    val mlValue = arrayOf("50","100","150","200","250","300","350","400","450")
     var currentMl = 3
-    var currentProduct = 0
+    var currentProduct = VendingMachine.products.size -1
     var currentPrice =0.0
     lateinit var progress: ProgressDialog
 
 
+    override fun onMessageSent(message: String) {
+    }
 
+    override fun onMessageReceived(message: String) {
+    }
 
+    override fun onConnected(connectedDevice: BluetoothSerialDevice) {
+    }
+
+    override fun onError(error: Throwable) {
+        finish()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
         customSlider = slider
+        updateCurrentPrice()
+        tv_product_name.text = VendingMachine.products.get(currentProduct).name
+        tv_product_description.text = VendingMachine.products.get(currentProduct).description
+        tv_volume.setText(mlValue.get(currentMl))
+
+        VendingMachine.addListener(this)
+
 
         btn_increment.setOnClickListener {
             btn_decrement.isEnabled = true
@@ -77,7 +84,6 @@ class MenuActivity : Activity() {
         for (i in 0 until VendingMachine.products.size){
             slideList.add(Slide(i,VendingMachine.products.get(i).imageURL, resources.getDimensionPixelSize(R.dimen.slider_image_corner) ) )
         }
-
         slider.addSlides(slideList)
         slider.setPageChange(object:ViewPager.OnPageChangeListener{
             override fun onPageScrollStateChanged(p0: Int) {
@@ -161,13 +167,13 @@ class MenuActivity : Activity() {
 
         val url = "https://api.gbprimepay.com/gbp/gateway/qrcode/text"
         val params = HashMap<String, Any>()
-        params["amount"] = 1.0
+        params["amount"] = currentPrice
         params["responseUrl"] = "https://magiapp.me"
         params["backgroundUrl"] = "https://us-central1-vending-machine-webhook.cloudfunctions.net/qrwebhook"
         params["detail"] = "testPayment"
         params["referenceNo"] = refNo
         params["payType"] = "F"
-        params["token"] = "YmpcqiOCK8b6ZnHL3JBSALJ52hq+Nq13luvIxImtAu90fKEDV6fyXSHm6ukJieySndpArszmFwcEVlYJEQVELY/6iYhMtUFifwkoAJ1qXqb3CGhZhYqI2P1dKQt+k9cZmySIez2uR6Dj9E6+uwNXbP0OBCY="
+        params["token"] = GB_TOKEN
         params["merchantDefined1"] = "Product: ${VendingMachine.products.get(currentProduct).name}"
 
         Fuel.post(url,params.toList())
@@ -176,6 +182,9 @@ class MenuActivity : Activity() {
                 Log.d(TAG, request.toString())
                 Log.d(TAG, response.toString())
                 val (bytes, error) = result
+                if (error != null){
+                    Log.d(TAG,error.toString())
+                }
                 if (bytes != null) {
                     progress.hide()
                     Log.d(TAG, "[response bytes] ${String(bytes)}")
@@ -184,6 +193,8 @@ class MenuActivity : Activity() {
                     val qrData = data.getString("qrcode")
                     val gbpRefNo = data.getString("gbpReferenceNo")
                     Log.d(TAG, "${refNo}\n${qrData}\n${gbpRefNo}")
+                    startPayProcess(qrData, refNo)
+
                 }
             }
 
@@ -191,6 +202,19 @@ class MenuActivity : Activity() {
 
 
     }
+
+    private fun startPayProcess(qrData:String, refNo: String){
+        val intent = Intent(this,PayActivity::class.java)
+        intent.putExtra("qrcode", qrData)
+        intent.putExtra("refno", refNo)
+        intent.putExtra("productdesc","${VendingMachine.products[currentProduct].name} ${mlValue[currentMl]}ml" )
+        intent.putExtra("selectedProduct",currentProduct )
+        intent.putExtra("selectedProductMl",mlValue[currentMl].toInt() )
+        intent.putExtra("productprice", currentPrice);
+        finish()
+        startActivity(intent)
+    }
+
 
 
 

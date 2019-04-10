@@ -1,5 +1,6 @@
 package com.example.vendingmachine
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,10 @@ import com.android.volley.toolbox.Volley
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.example.vendingmachine.`object`.Product
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.common.GooglePlayServicesUtil
+import com.google.android.gms.security.ProviderInstaller
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONArray
@@ -54,6 +59,10 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
         btn_start_vending.setOnClickListener {
             next()
         }
+
+        VendingMachine.addListener(this)
+
+        updateAndroidSecurityProvider(this)
 
 
     }
@@ -131,9 +140,10 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
 
 
     private fun connectBluetooth(address: String) {
+        BluetoothManager.getInstance().closeDevice(address)
 
-        VendingMachine.addListener(this)
         VendingMachine.connectDevice(address)
+
 //
 
 
@@ -150,7 +160,7 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
 //            }
 //
 //        }
-        VendingMachine.sendTest()
+//        VendingMachine.sendTest()
 
         val intent = Intent(this, MenuActivity::class.java)
         startActivity(intent)
@@ -160,7 +170,7 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
     }
 
     override fun onMessageReceived(message: String) {
-
+//        Toast.makeText(this,"incoming message : " + message,Toast.LENGTH_LONG).show()
     }
 
     override fun onError(error: Throwable) {
@@ -171,6 +181,7 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
 
     override fun onConnected(connectedDevice: BluetoothSerialDevice) {
         tv_machine_status.text = "Connected to ${connectedDevice.mac}"
+        VendingMachine.sendTest()
     }
 
     private fun getServerData() {
@@ -187,12 +198,13 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
 
                 try {
                     val data = JSONObject(response.get(0).toString())
+                    VendingMachine.products.clear();
                     for (i in 1..data.length()+1){
                         val productJson =  JSONObject(data.get(i.toString()).toString())
                         val productRatio = JSONObject(productJson.get("ratio").toString())
-                        val ratioMap =  mutableListOf<Map<Int,Double>>()
+                        val ratioMap =  mutableMapOf<Int,Double>()
                         for (key in productRatio.keys()){
-                            ratioMap.add(mapOf(key.toInt() to productRatio.getDouble(key)))
+                            ratioMap.put(key.toInt() , productRatio.getDouble(key))
                         }
 
                         val product = Product(productJson.getString("name"),productJson.getString("description"), productJson.getDouble("price"), ratioMap,productJson.getString("image"))
@@ -209,12 +221,15 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
 
                 } catch (e: JSONException) {
                     e.printStackTrace()
+                    progress.hide()
+                    Toast.makeText(this,e.cause.toString(),Toast.LENGTH_LONG).show()
                 }
 
 
             },
             Response.ErrorListener { error ->
                 Log.d(TAG,"ERROR!" + error.toString())
+                Toast.makeText(this,error.cause.toString(),Toast.LENGTH_LONG).show()
                 progress?.hide()
 
             }
@@ -223,6 +238,22 @@ class MainActivity : AppCompatActivity(), VendingMachineListener {
         requestQueue.add(jsonObjectRequest)
 
 
+    }
+
+    private fun updateAndroidSecurityProvider( callingActivity :Activity) {
+    try {
+        ProviderInstaller.installIfNeeded(this);
+    } catch (e : GooglePlayServicesRepairableException) {
+        // Thrown when Google Play Services is not installed, up-to-date, or enabled
+        // Show dialog to allow users to install, update, or otherwise enable Google Play services.
+        GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), callingActivity, 0);
+    } catch (e : GooglePlayServicesNotAvailableException) {
+        Log.e("SecurityException", "Google Play Services not available.");
+    }
+}
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
 

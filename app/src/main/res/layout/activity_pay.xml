@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".PayActivity"
+        android:layout_margin="20dp"
+        android:orientation="horizontal">
+
+    <LinearLayout
+            android:layout_gravity="center_horizontal" android:layout_width="300dp"
+            android:background="@drawable/shape"
+                  android:layout_height="match_parent" android:orientation="vertical">
+        <ImageView android:layout_width="match_parent" android:layout_height="50dp"
+                   android:src="@drawable/thai_qr_logo"
+                   android:background="#113566"
+
+                   android:layout_gravity="center"/>
+        <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:id="@+id/iv_qr_image"
+                   android:layout_margin="3dp" android:scaleType="fitCenter"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_gravity="center_horizontal" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_margin="5dp">
+            <com.github.ybq.android.spinkit.SpinKitView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/spin_kit"
+                    style="@style/SpinKitView.Small.DoubleBounce"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    app:SpinKit_Color="@color/colorAccent" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Waiting for payment"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:layout_marginHorizontal="20dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Scan to pay" android:textStyle="bold" android:textSize="30dp"/>
+        <TextView android:layout_width="wrap_content"
+                  android:layout_marginTop="10dp"
+                  android:layout_height="wrap_content" android:text= "Product description" android:textSize="20dp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text= "Itoen OiOcha 300ml"
+                  android:id="@+id/tv_pay_description" android:textSize="20dp"/>
+        <View android:layout_width="wrap_content" android:layout_height="0dp" android:layout_weight="1"></View>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Total 50B" android:textSize="22dp" android:textStyle="bold"
+        android:id="@+id/tv_pay_price"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text= "Ref. id : "
+                  android:id="@+id/tv_ref_id" android:textSize="15dp"/>
+        <Button android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/btn_back_to_menu" android:text="Cancel (120s)"/>
+    </LinearLayout>
+
+</LinearLayout>
+
+
+
+
+

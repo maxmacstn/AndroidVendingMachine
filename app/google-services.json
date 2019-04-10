@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "940342588548",
+    "firebase_url": "https://vending-machine-webhook.firebaseio.com",
+    "project_id": "vending-machine-webhook",
+    "storage_bucket": "vending-machine-webhook.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940342588548:android:da5dd4f2cdbcb12e",
+        "android_client_info": {
+          "package_name": "com.example.vendingmachine"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940342588548-0533cvp00ahdasnai9qknn96cc2ov7rm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd_TzrbDkO_wLnu6JrixVIXXwuVm_M7xQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

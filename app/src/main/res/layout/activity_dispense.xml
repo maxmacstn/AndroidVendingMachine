@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".DispenseActivity">
+
+    <TextView android:id="@+id/tv_dispense_ready"
+              android:layout_marginTop="30dp"
+              android:layout_marginLeft="30dp"
+              android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold"
+              android:textSize="30dp" android:text="Ready to dispense!"/>
+
+    <me.itangqi.waveloadingview.WaveLoadingView
+            android:layout_below="@+id/tv_dispense_ready"
+            android:layout_gravity="center"
+            android:id="@+id/waveLoadingView"
+            android:layout_width="230dp"
+            android:layout_height="230dp"
+            app:wlv_borderColor="@color/colorAccent"
+            app:wlv_borderWidth="3dp"
+            app:wlv_progressValue="40"
+            app:wlv_shapeType="circle"
+            app:wlv_round_rectangle="true"
+            app:wlv_triangle_direction="north"
+            app:wlv_titleCenterStrokeColor="@android:color/holo_blue_dark"
+            app:wlv_titleCenterStrokeWidth="3dp"
+            app:wlv_titleCenter="Start"
+            app:wlv_titleCenterColor="@android:color/white"
+            app:wlv_titleCenterSize="24sp"
+            app:wlv_waveAmplitude="70"
+            app:wlv_waveColor="@color/colorAccent"
+            android:layout_marginTop="30dp" android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" android:layout_centerInParent="true"/>
+</RelativeLayout>
